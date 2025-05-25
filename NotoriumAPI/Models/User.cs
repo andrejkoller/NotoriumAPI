@@ -15,6 +15,8 @@ namespace NotoriumAPI.Models
         [JsonConverter(typeof(JsonStringEnumConverter))]
         public UserRole Role { get; set; } = UserRole.User;
 
+        public ICollection<SheetMusic> SheetMusics { get; set; } = [];
+
         public enum UserRole
         {
             Admin,

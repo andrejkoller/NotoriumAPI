@@ -8,15 +8,33 @@ namespace NotoriumAPI
         public NotoriumDbContext(DbContextOptions<NotoriumDbContext> options) : base(options) { }
 
         public DbSet<User> Users { get; set; }
+        public DbSet<SheetMusic> SheetMusic { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
 
             modelBuilder.Entity<User>()
-                .ToTable("Users")
                 .Property(u => u.Role)
                 .HasConversion<string>();
+
+            modelBuilder.Entity<User>()
+                .HasMany(u => u.SheetMusics)
+                .WithOne(sm => sm.User)
+                .HasForeignKey(sm => sm.UserId);
+
+            modelBuilder.Entity<SheetMusic>()
+                .Property(sm => sm.Genre)
+                .HasConversion<string>();
+            modelBuilder.Entity<SheetMusic>()
+                .Property(sm => sm.Instrument)
+                .HasConversion<string>();
+            modelBuilder.Entity<SheetMusic>()
+                .Property(sm => sm.Difficulty)
+                .HasConversion<string>();
+
+            modelBuilder.Entity<User>().ToTable("Users");
+            modelBuilder.Entity<SheetMusic>().ToTable("SheetMusic");
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)

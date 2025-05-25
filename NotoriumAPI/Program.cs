@@ -42,6 +42,7 @@ builder.Services.AddControllers()
         });
 builder.Services.AddScoped<AuthService>();
 builder.Services.AddScoped<UserService>();
+builder.Services.AddScoped<SheetMusicService>();
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<NotoriumDbContext>(options =>
@@ -64,6 +65,8 @@ app.UseCors("AllowAllOrigins");
 
 app.UseAuthentication();
 app.UseAuthorization();
+
+app.UseStaticFiles();
 
 app.MapControllers();
 
