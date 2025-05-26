@@ -17,6 +17,7 @@ namespace NotoriumAPI.Models
         [JsonConverter(typeof(JsonStringEnumConverter))]
         public Difficulty Difficulty { get; set; }
 
+        public string PreviewImage { get; set; } = string.Empty;
         public string FileName { get; set; } = string.Empty;
         public string FilePath { get; set; } = string.Empty;
         public DateTime UploadedAt { get; set; } = DateTime.UtcNow;

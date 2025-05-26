@@ -20,23 +20,32 @@ namespace NotoriumAPI.Services
             return await _context.SheetMusic.ToListAsync();
         }
 
+        public async Task<SheetMusic> GetSheetMusicById(int id)
+        {
+            var sheetMusic = await _context.SheetMusic.FindAsync(id);
+
+            return sheetMusic ?? throw new Exception("Sheet music not found.");
+        }
+
         public async Task<SheetMusic> UploadAsync(SheetMusicUploadDTO upload)
         {
-            if (upload == null || upload.File.Length == 0)
-                throw new Exception("No file uploaded.");
+            if (upload.File == null || upload.File.Length == 0)
+                throw new ArgumentException("No file uploaded.");
 
-            var uploadsFolder = Path.Combine(_env.WebRootPath, "uploads");
-            Directory.CreateDirectory(uploadsFolder);
+            var uploadsPath = Path.Combine(_env.WebRootPath, "uploads");
+            Directory.CreateDirectory(uploadsPath);
 
             var fileName = Path.GetFileName(upload.File.FileName);
-            var filePath = Path.Combine(uploadsFolder, fileName);
+            var filePath = Path.Combine(uploadsPath, fileName);
 
             using (var stream = new FileStream(filePath, FileMode.Create))
             {
                 await upload.File.CopyToAsync(stream);
             }
 
-            var sheet = new SheetMusic
+            var relativePdfPath = Path.Combine("uploads", fileName).Replace("\\", "/");
+
+            var sheetMusic = new SheetMusic
             {
                 Title = upload.Title,
                 Composer = upload.Composer,
@@ -45,16 +54,25 @@ namespace NotoriumAPI.Services
                 Difficulty = upload.Difficulty,
                 Description = upload.Description,
                 IsPublic = upload.IsPublic,
+                FilePath = relativePdfPath,
                 FileName = fileName,
-                FilePath = $"/uploads/{fileName}",
-                UploadedAt = DateTime.UtcNow,
-                Downloads = 0
+                UserId = upload.UserId,
             };
 
-            _context.SheetMusic.Add(sheet);
-            await _context.SaveChangesAsync();
-
-            return sheet;
+            try
+            {
+                await _context.SheetMusic.AddAsync(sheetMusic);
+                await _context.SaveChangesAsync();
+                return sheetMusic;
+            }
+            catch (Exception ex)
+            {
+                if (File.Exists(filePath))
+                {
+                    File.Delete(filePath);
+                }
+                throw new ApplicationException($"Failed to upload sheet music: {ex.Message}", ex);
+            }
         }
     }
 }

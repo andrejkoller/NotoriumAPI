@@ -11,6 +11,8 @@ namespace NotoriumAPI.DTOs
         public Difficulty Difficulty { get; set; }
         public string Description { get; set; } = string.Empty;
         public bool IsPublic { get; set; } = true;
+        public string PreviewImage { get; set; } = string.Empty;
+        public int UserId { get; set; }
 
         public IFormFile File { get; set; } = null!;
     }
