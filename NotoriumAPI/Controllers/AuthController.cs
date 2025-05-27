@@ -37,9 +37,7 @@ namespace NotoriumAPI.Controllers
             var result = await _authService.Login(request);
 
             if (result == null)
-            {
                 return Unauthorized(new { error = "Invalid username or password" });
-            }
 
             return Ok(new
             {

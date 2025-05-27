@@ -68,9 +68,8 @@ namespace NotoriumAPI.Services
             catch (Exception ex)
             {
                 if (File.Exists(filePath))
-                {
                     File.Delete(filePath);
-                }
+
                 throw new ApplicationException($"Failed to upload sheet music: {ex.Message}", ex);
             }
         }

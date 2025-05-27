@@ -16,9 +16,7 @@ namespace NotoriumAPI.Controllers
                 var userId = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
                 if (!int.TryParse(userId, out int id))
-                {
                     return null;
-                }
 
                 return _userService.GetUserById(id);
             }

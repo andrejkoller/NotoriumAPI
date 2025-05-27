@@ -51,14 +51,10 @@ namespace NotoriumAPI.Controllers
             try
             {
                 if (CurrentUser == null)
-                {
                     return Unauthorized();
-                }
 
                 if (upload.File == null || upload.File.Length == 0)
-                {
                     return BadRequest(new { message = "No file uploaded." });
-                }
 
                 upload.UserId = CurrentUser.Id;
                 var sheetMusic = await _service.UploadAsync(upload);

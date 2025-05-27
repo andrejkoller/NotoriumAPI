@@ -27,9 +27,7 @@ namespace NotoriumAPI.Services
         public async Task<User?> Register(RegisterDTO request)
         {
             if (await EmailExists(request.Email))
-            {
                 throw new ArgumentException("Email is already taken.");
-            }
 
             string passwordHash = BCrypt.Net.BCrypt.HashPassword(request.Password);
 
@@ -42,7 +40,7 @@ namespace NotoriumAPI.Services
                 Role = request.Role
             };
 
-            _context.Users.Add(user);
+            await _context.Users.AddAsync(user);
             await _context.SaveChangesAsync();
 
             return user;
@@ -53,9 +51,7 @@ namespace NotoriumAPI.Services
             var user = await _context.Users.SingleOrDefaultAsync(x => x.Email == request.Email);
 
             if (user == null || !BCrypt.Net.BCrypt.Verify(request.Password, user.Password))
-            {
                 return null;
-            }
 
             string token = GenerateJwtToken(user);
 
