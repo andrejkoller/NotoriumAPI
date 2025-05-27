@@ -43,6 +43,9 @@ namespace NotoriumAPI.Services
             if (!string.IsNullOrWhiteSpace(updateDto.Username))
                 user.Username = updateDto.Username;
 
+            if (!string.IsNullOrWhiteSpace(updateDto.Description))
+                user.Description = updateDto.Description;
+
             _context.Users.Update(user);
             await _context.SaveChangesAsync();
             return user;

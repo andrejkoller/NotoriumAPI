@@ -9,7 +9,7 @@ using System.Text.Json.Serialization;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddCors(options =>
-{
+{ 
     options.AddPolicy("AllowAllOrigins",
         builder =>
         {

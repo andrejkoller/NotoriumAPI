@@ -7,17 +7,23 @@ namespace NotoriumAPI.Services
     public class SheetMusicService
     {
         private readonly NotoriumDbContext _context;
+        private readonly PdfThumbnailService _pdfThumbnailService;
         private readonly IWebHostEnvironment _env;
 
-        public SheetMusicService(NotoriumDbContext context, IWebHostEnvironment env)
+        public SheetMusicService(NotoriumDbContext context, PdfThumbnailService pdfThumbnailService, IWebHostEnvironment env)
         {
             _context = context;
+            _pdfThumbnailService = pdfThumbnailService;
             _env = env;
         }
 
         public async Task<List<SheetMusic>> GetAllAsync()
         {
-            return await _context.SheetMusic.ToListAsync();
+            return await _context.SheetMusic
+                .Where(sm => sm.IsPublic)
+                .OrderByDescending(sm => sm.UploadedAt)
+                .Include(sm => sm.User)
+                .ToListAsync();
         }
 
         public async Task<SheetMusic> GetSheetMusicById(int id)
@@ -44,6 +50,8 @@ namespace NotoriumAPI.Services
             }
 
             var relativePdfPath = Path.Combine("uploads", fileName).Replace("\\", "/");
+            var thumbnailPath = _pdfThumbnailService.GenerateThumbnail(filePath);
+            var relativeThumbnailPath = thumbnailPath.Replace(_env.WebRootPath, "").Replace("\\", "/");
 
             var sheetMusic = new SheetMusic
             {
@@ -57,6 +65,7 @@ namespace NotoriumAPI.Services
                 FilePath = relativePdfPath,
                 FileName = fileName,
                 UserId = upload.UserId,
+                PreviewImage = relativeThumbnailPath
             };
 
             try

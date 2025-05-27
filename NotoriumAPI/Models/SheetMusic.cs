@@ -27,7 +27,7 @@ namespace NotoriumAPI.Models
         public int Downloads { get; set; } = 0;
 
         public int UserId { get; set; }
-        public User User { get; set; } = null!;
+        public User? User { get; set; }
     }
 
     public enum Genre

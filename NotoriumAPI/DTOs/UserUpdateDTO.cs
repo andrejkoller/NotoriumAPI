@@ -1,4 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
+using static NotoriumAPI.Models.User;
 
 namespace NotoriumAPI.DTOs
 {
@@ -10,6 +12,8 @@ namespace NotoriumAPI.DTOs
         public string? Email { get; set; }
         [Required, MinLength(3)]
         public string? Username { get; set; }
-        public string? Role { get; set; }
+        public string? Description { get; set; }
+        [JsonConverter(typeof(JsonStringEnumConverter))]
+        public UserRole Role { get; set; } = UserRole.User;
     }
 }
