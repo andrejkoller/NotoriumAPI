@@ -29,7 +29,7 @@ namespace NotoriumAPI.Services
                 int originalWidth = (int)page.Width;
                 int originalHeight = (int)page.Height;
 
-                int maxWidth = 300;
+                int maxWidth = 600;
                 float scale = (float)maxWidth / originalWidth;
 
                 int thumbWidth = (int)(originalWidth * scale);
@@ -39,7 +39,7 @@ namespace NotoriumAPI.Services
 
                 page.Render(bitmap, (0, 0, thumbWidth, thumbHeight), PDFiumSharp.Enums.PageOrientations.Normal);
 
-                bitmap.Save(outputPath, 150, 150);
+                bitmap.Save(outputPath, 300, 300);
 
                 return Path.Combine("uploads", thumbnailName).Replace("\\", "/");
             }

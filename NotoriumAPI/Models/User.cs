@@ -12,6 +12,7 @@ namespace NotoriumAPI.Models
         public string Username { get; set; } = string.Empty;
         public string Password { get; set; } = string.Empty;
         public string? Description { get; set; } = string.Empty;
+        public string? ProfilePicture { get; set; } = string.Empty;
 
         [JsonConverter(typeof(JsonStringEnumConverter))]
         public UserRole Role { get; set; } = UserRole.User;

@@ -50,5 +50,40 @@ namespace NotoriumAPI.Services
             await _context.SaveChangesAsync();
             return user;
         }
+
+        public async Task<User?> UpdateProfilePicture(int id, ProfilePictureUpdateDTO updateDto)
+        {
+            var user = await _context.Users.SingleOrDefaultAsync(u => u.Id == id)
+                ?? throw new KeyNotFoundException($"User with ID {id} not found.");
+
+            if (updateDto.ProfileImageFile != null && updateDto.ProfileImageFile.Length > 0)
+            {
+                var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "profilepics");
+                Directory.CreateDirectory(uploadsFolder);
+
+                var fileName = $"{Guid.NewGuid()}_{updateDto.ProfileImageFile.FileName}";
+                var filePath = Path.Combine(uploadsFolder, fileName);
+
+                using (var stream = new FileStream(filePath, FileMode.Create))
+                {
+                    await updateDto.ProfileImageFile.CopyToAsync(stream);
+                }
+
+                if (!string.IsNullOrWhiteSpace(user.ProfilePicture))
+                {
+                    var oldFilePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", user.ProfilePicture);
+                    if (File.Exists(oldFilePath))
+                    {
+                        File.Delete(oldFilePath);
+                    }
+                }
+
+                user.ProfilePicture = Path.Combine("profilepics", fileName).Replace("\\", "/");
+            }
+
+            _context.Users.Update(user);
+            await _context.SaveChangesAsync();
+            return user;
+        }
     }
 }

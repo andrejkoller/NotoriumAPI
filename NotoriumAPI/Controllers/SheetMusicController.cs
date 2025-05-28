@@ -9,12 +9,10 @@ namespace NotoriumAPI.Controllers
     public class SheetMusicController : BaseController
     {
         private readonly SheetMusicService _service;
-        private readonly PdfThumbnailService _thumbnailService;
 
-        public SheetMusicController(SheetMusicService service, PdfThumbnailService thumbnailService, UserService userService) : base(userService)
+        public SheetMusicController(SheetMusicService service, UserService userService) : base(userService)
         {
             _service = service;
-            _thumbnailService = thumbnailService;
         }
 
         [HttpGet("all")]
@@ -31,7 +29,24 @@ namespace NotoriumAPI.Controllers
             }
         }
 
-        [HttpGet("id")]
+        [HttpGet("user/{id}")]
+        public async Task<IActionResult> GetCurrentUserSheetMusic()
+        {
+            if (CurrentUser == null)
+                return Unauthorized(new { message = "User not authenticated" });
+
+            try
+            {
+                var sheetMusicList = await _service.GetSheetMusicByUserId(CurrentUser.Id);
+                return Ok(sheetMusicList);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
+
+        [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
         {
             try

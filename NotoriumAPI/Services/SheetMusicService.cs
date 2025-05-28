@@ -26,6 +26,15 @@ namespace NotoriumAPI.Services
                 .ToListAsync();
         }
 
+        public async Task<List<SheetMusic>> GetSheetMusicByUserId(int userId)
+        {
+            return await _context.SheetMusic
+                .Where(sm => sm.UserId == userId)
+                .OrderByDescending(sm => sm.UploadedAt)
+                .Include(sm => sm.User)
+                .ToListAsync();
+        }
+
         public async Task<SheetMusic> GetSheetMusicById(int id)
         {
             var sheetMusic = await _context.SheetMusic.FindAsync(id);

@@ -22,7 +22,6 @@ namespace NotoriumAPI.Controllers
                 return Unauthorized(new { error = "User not authenticated" });
 
             var users = await _userService.GetAllUsersAsync();
-
             return Ok(users);
         }
 
@@ -33,19 +32,39 @@ namespace NotoriumAPI.Controllers
                 return Unauthorized(new { error = "User not authenticated" });
 
             var user = _userService.GetUserById(CurrentUser.Id);
-
             return Ok(user);
         }
 
-        [HttpPut("update/{id}")]
-        public async Task<IActionResult> UpdateUser(UserUpdateDTO updateDto)
+        [HttpPut("{id}/update")]
+        public async Task<IActionResult> UpdateUser(int id, UserUpdateDTO updateDto)
         {
             if (CurrentUser == null)
                 return Unauthorized(new { error = "User not authenticated" });
 
             try
             {
-                var user = await _userService.UpdateUserAsync(CurrentUser.Id, updateDto);
+                var user = await _userService.UpdateUserAsync(id, updateDto);
+
+                if (user == null)
+                    return NotFound(new { error = "User not found" });
+
+                return Ok(user);
+            }
+            catch (ArgumentException e)
+            {
+                return BadRequest(new { error = e.Message });
+            }
+        }
+
+        [HttpPut("{id}/uploadProfilePicture")]
+        public async Task<IActionResult> UpdateProfilePicture(int id, [FromForm] ProfilePictureUpdateDTO updateDto)
+        {
+            if (CurrentUser == null)
+                return Unauthorized(new { error = "User not authenticated" });
+
+            try
+            {
+                var user = await _userService.UpdateProfilePicture(id, updateDto);
 
                 if (user == null)
                     return NotFound(new { error = "User not found" });
