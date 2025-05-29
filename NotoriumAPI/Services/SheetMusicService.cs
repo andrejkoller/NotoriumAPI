@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using NotoriumAPI.DTOs;
 using NotoriumAPI.Models;
 
@@ -17,7 +18,7 @@ namespace NotoriumAPI.Services
             _env = env;
         }
 
-        public async Task<List<SheetMusic>> GetAllAsync()
+        public async Task<List<SheetMusic>> GetAllSheetMusicAsync()
         {
             return await _context.SheetMusic
                 .Where(sm => sm.IsPublic)
@@ -90,6 +91,18 @@ namespace NotoriumAPI.Services
 
                 throw new ApplicationException($"Failed to upload sheet music: {ex.Message}", ex);
             }
+        }
+
+        public async Task<List<SheetMusic>> GetByGenreAsync(string genre)
+        {
+            if (!Enum.TryParse<Genre>(genre, true, out var genreEnum))
+                throw new ArgumentException("Invalid genre");
+
+            return await _context.SheetMusic
+                .Where(sm => sm.Genre == genreEnum && sm.IsPublic)
+                .OrderByDescending(sm => sm.UploadedAt)
+                .Include(sm => sm.User)
+                .ToListAsync();
         }
     }
 }

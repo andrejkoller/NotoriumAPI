@@ -1,6 +1,6 @@
 ﻿namespace NotoriumAPI.DTOs
 {
-    public class ProfilePictureUpdateDTO
+    public class ProfileImageUpdateDTO
     {
         public IFormFile ProfileImageFile { get; set; } = null!;
     }

@@ -1,16 +1,14 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using NotoriumAPI.Models;
+using static NotoriumAPI.Models.User;
 using System.Text.Json.Serialization;
 
-namespace NotoriumAPI.Models
+namespace NotoriumAPI.DTOs
 {
-    public class User
+    public class UserDTO
     {
-        [Key]
-        public int Id { get; set; }
         public string Name { get; set; } = string.Empty;
         public string Email { get; set; } = string.Empty;
         public string Username { get; set; } = string.Empty;
-        public string Password { get; set; } = string.Empty;
         public string? Description { get; set; } = string.Empty;
         public string? ProfileImage { get; set; } = string.Empty;
         public string? BackgroundImage { get; set; } = string.Empty;
@@ -20,11 +18,5 @@ namespace NotoriumAPI.Models
 
         public ICollection<SheetMusic> SheetMusic { get; set; } = [];
         public ICollection<SheetMusic> FavoriteSheetMusic { get; set; } = [];
-
-        public enum UserRole
-        {
-            Admin,
-            User
-        }
     }
 }

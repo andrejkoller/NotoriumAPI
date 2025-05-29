@@ -19,7 +19,7 @@ namespace NotoriumAPI
                 .HasConversion<string>();
 
             modelBuilder.Entity<User>()
-                .HasMany(u => u.SheetMusics)
+                .HasMany(u => u.SheetMusic)
                 .WithOne(sm => sm.User)
                 .HasForeignKey(sm => sm.UserId);
 
@@ -32,6 +32,11 @@ namespace NotoriumAPI
             modelBuilder.Entity<SheetMusic>()
                 .Property(sm => sm.Difficulty)
                 .HasConversion<string>();
+
+            modelBuilder.Entity<User>()
+                .HasMany(u => u.FavoriteSheetMusic)
+                .WithMany(sm => sm.FavoritedByUsers)
+                .UsingEntity(j => j.ToTable("UserFavoriteSheetMusic"));
 
             modelBuilder.Entity<User>().ToTable("Users");
             modelBuilder.Entity<SheetMusic>().ToTable("SheetMusic");

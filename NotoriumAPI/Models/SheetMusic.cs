@@ -28,6 +28,7 @@ namespace NotoriumAPI.Models
 
         public int UserId { get; set; }
         public User? User { get; set; }
+        public ICollection<User> FavoritedByUsers { get; set; } = [];
     }
 
     public enum Genre

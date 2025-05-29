@@ -1,49 +1,50 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using NotoriumAPI.DTOs;
 using NotoriumAPI.Services;
 
 namespace NotoriumAPI.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("api/[controller]")]
-    public class UserController : BaseController
+    public class UserController(UserService userService) : BaseController(userService)
     {
-        private new readonly UserService _userService;
-
-        public UserController(UserService userService) : base(userService)
-        {
-            _userService = userService;
-        }
-
         [HttpGet("all")]
         public async Task<IActionResult> GetAllUsers()
         {
-            if (CurrentUser == null)
+            var currentUser = await GetCurrentUserAsync();
+
+            if (currentUser == null)
                 return Unauthorized(new { error = "User not authenticated" });
 
-            var users = await _userService.GetAllUsersAsync();
+            var users = await userService.GetAllUsersAsync();
             return Ok(users);
         }
 
         [HttpGet("currentUser")]
-        public IActionResult GetCurrentUser()
+        public async Task<IActionResult> GetCurrentUser()
         {
-            if (CurrentUser == null)
+            var currentUser = await GetCurrentUserAsync();
+
+            if (currentUser == null)
                 return Unauthorized(new { error = "User not authenticated" });
 
-            var user = _userService.GetUserById(CurrentUser.Id);
+            var user = await userService.GetUserByIdAsync(currentUser.Id);
             return Ok(user);
         }
 
         [HttpPut("{id}/update")]
-        public async Task<IActionResult> UpdateUser(int id, UserUpdateDTO updateDto)
+        public async Task<IActionResult> UpdateUserInformation(int id, UserUpdateDTO updateDto)
         {
-            if (CurrentUser == null)
+            var currentUser = await GetCurrentUserAsync();
+
+            if (currentUser == null)
                 return Unauthorized(new { error = "User not authenticated" });
 
             try
             {
-                var user = await _userService.UpdateUserAsync(id, updateDto);
+                var user = await userService.UpdateUserInformationAsync(id, updateDto);
 
                 if (user == null)
                     return NotFound(new { error = "User not found" });
@@ -56,19 +57,42 @@ namespace NotoriumAPI.Controllers
             }
         }
 
-        [HttpPut("{id}/uploadProfilePicture")]
-        public async Task<IActionResult> UpdateProfilePicture(int id, [FromForm] ProfilePictureUpdateDTO updateDto)
+        [HttpPut("{id}/uploadProfileImage")]
+        public async Task<IActionResult> UpdateProfilePicture(int id, [FromForm] ProfileImageUpdateDTO updateDto)
         {
-            if (CurrentUser == null)
+            var currentUser = await GetCurrentUserAsync();
+
+            if (currentUser == null)
                 return Unauthorized(new { error = "User not authenticated" });
 
             try
             {
-                var user = await _userService.UpdateProfilePicture(id, updateDto);
+                var user = await userService.UpdateProfileImageAsync(id, updateDto);
 
                 if (user == null)
                     return NotFound(new { error = "User not found" });
 
+                return Ok(user);
+            }
+            catch (ArgumentException e)
+            {
+                return BadRequest(new { error = e.Message });
+            }
+        }
+
+        [HttpPut("{id}/updateBackgroundImage")]
+        public async Task<IActionResult> UpdateBackgroundImage(int id, [FromForm] BannerImageUpdateDTO updateDto)
+        {
+            var currentUser = await GetCurrentUserAsync();
+
+            if (currentUser == null)
+                return Unauthorized(new { error = "User not authenticated" });
+
+            try
+            {
+                var user = await userService.UpdateBackgroundImageAsync(id, updateDto);
+                if (user == null)
+                    return NotFound(new { error = "User not found" });
                 return Ok(user);
             }
             catch (ArgumentException e)

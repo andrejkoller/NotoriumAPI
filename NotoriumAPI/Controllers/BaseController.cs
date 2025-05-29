@@ -9,22 +9,21 @@ namespace NotoriumAPI.Controllers
     {
         protected readonly UserService _userService;
 
-        protected User? CurrentUser
+        protected BaseController(UserService userService)
         {
-            get
+            _userService = userService;
+        }
+
+        protected async Task<User?> GetCurrentUserAsync()
+        {
             {
                 var userId = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
                 if (!int.TryParse(userId, out int id))
                     return null;
 
-                return _userService.GetUserById(id);
+                return await _userService.GetUserByIdAsync(id);
             }
-        }
-
-        protected BaseController(UserService userService)
-        {
-            _userService = userService;
         }
     }
 }

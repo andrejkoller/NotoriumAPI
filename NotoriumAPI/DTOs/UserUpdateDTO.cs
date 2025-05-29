@@ -14,6 +14,6 @@ namespace NotoriumAPI.DTOs
         public string? Username { get; set; }
         public string? Description { get; set; }
         [JsonConverter(typeof(JsonStringEnumConverter))]
-        public UserRole Role { get; set; } = UserRole.User;
+        public UserRole Role { get; set; }
     }
 }
