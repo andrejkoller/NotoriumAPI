@@ -1,26 +1,21 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using NotoriumAPI.DTOs;
 using NotoriumAPI.Services;
 
 namespace NotoriumAPI.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("api/[controller]")]
-    public class SheetMusicController : BaseController
+    public class SheetMusicController(SheetMusicService service, UserService userService) : BaseController(userService)
     {
-        private readonly SheetMusicService _service;
-
-        public SheetMusicController(SheetMusicService service, UserService userService) : base(userService)
-        {
-            _service = service;
-        }
-
         [HttpGet("all")]
         public async Task<IActionResult> GetAllSheetMusic()
         {
             try
             {
-                var sheetMusicList = await _service.GetAllSheetMusicAsync();
+                var sheetMusicList = await service.GetAllSheetMusicAsync();
                 return Ok(sheetMusicList);
             }
             catch(Exception ex)
@@ -39,7 +34,7 @@ namespace NotoriumAPI.Controllers
 
             try
             {
-                var sheetMusicList = await _service.GetSheetMusicByUserId(id);
+                var sheetMusicList = await service.GetSheetMusicByUserId(id);
                 return Ok(sheetMusicList);
             }
             catch (Exception ex)
@@ -53,7 +48,7 @@ namespace NotoriumAPI.Controllers
         {
             try
             {
-                var sheetMusic = await _service.GetSheetMusicById(id);
+                var sheetMusic = await service.GetSheetMusicById(id);
                 return Ok(sheetMusic);
             }
             catch (Exception ex)
@@ -77,7 +72,7 @@ namespace NotoriumAPI.Controllers
                     return BadRequest(new { message = "No file uploaded." });
 
                 upload.UserId = currentUser.Id;
-                var sheetMusic = await _service.UploadAsync(upload);
+                var sheetMusic = await service.UploadAsync(upload);
                 return Ok(sheetMusic);
             }
             catch(Exception ex)
@@ -89,7 +84,7 @@ namespace NotoriumAPI.Controllers
         [HttpGet("bygenre")]
         public async Task<IActionResult> GetByGenre([FromQuery] string genre)
         {
-            var result = await _service.GetByGenreAsync(genre);
+            var result = await service.GetByGenreAsync(genre);
             return Ok(result);
         }
     }

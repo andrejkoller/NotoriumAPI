@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using NotoriumAPI.DTOs;
+using NotoriumAPI.Mappers;
 using NotoriumAPI.Models;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -8,23 +9,14 @@ using System.Text;
 
 namespace NotoriumAPI.Services
 {
-    public class AuthService
+    public class AuthService(NotoriumDbContext context, IConfiguration configuration)
     {
-        private readonly NotoriumDbContext _context;
-        private readonly IConfiguration _configuration;
-
-        public AuthService(NotoriumDbContext context, IConfiguration configuration)
-        {
-            _context = context;
-            _configuration = configuration;
-        }
-
         public async Task<bool> EmailExists(string email)
         {
-            return await _context.Users.AnyAsync(x => x.Email == email);
+            return await context.Users.AnyAsync(x => x.Email == email);
         }
 
-        public async Task<User?> Register(RegisterDTO request)
+        public async Task<UserDTO?> Register(RegisterDTO request)
         {
             if (await EmailExists(request.Email))
                 throw new ArgumentException("Email is already taken.");
@@ -40,15 +32,15 @@ namespace NotoriumAPI.Services
                 Role = request.Role
             };
 
-            await _context.Users.AddAsync(user);
-            await _context.SaveChangesAsync();
+            await context.Users.AddAsync(user);
+            await context.SaveChangesAsync();
 
-            return user;
+            return UserMapper.ToDTO(user);
         }
 
         public async Task<(string token, object user)?> Login(LoginDTO request)
         {
-            var user = await _context.Users.SingleOrDefaultAsync(x => x.Email == request.Email);
+            var user = await context.Users.SingleOrDefaultAsync(x => x.Email == request.Email);
 
             if (user == null || !BCrypt.Net.BCrypt.Verify(request.Password, user.Password))
                 return null;
@@ -60,7 +52,7 @@ namespace NotoriumAPI.Services
 
         private string GenerateJwtToken(User user)
         {
-            var key = Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]!);
+            var key = Encoding.UTF8.GetBytes(configuration["Jwt:Key"]!);
             var tokenHandler = new JwtSecurityTokenHandler();
 
             var tokenDescriptor = new SecurityTokenDescriptor

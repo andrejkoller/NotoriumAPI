@@ -6,6 +6,7 @@ namespace NotoriumAPI.DTOs
 {
     public class UserDTO
     {
+        public int Id { get; set; }
         public string Name { get; set; } = string.Empty;
         public string Email { get; set; } = string.Empty;
         public string Username { get; set; } = string.Empty;
@@ -15,8 +16,5 @@ namespace NotoriumAPI.DTOs
 
         [JsonConverter(typeof(JsonStringEnumConverter))]
         public UserRole Role { get; set; } = UserRole.User;
-
-        public ICollection<SheetMusic> SheetMusic { get; set; } = [];
-        public ICollection<SheetMusic> FavoriteSheetMusic { get; set; } = [];
     }
 }

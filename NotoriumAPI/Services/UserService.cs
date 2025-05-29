@@ -1,6 +1,6 @@
-﻿using Azure.Core;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using NotoriumAPI.DTOs;
+using NotoriumAPI.Mappers;
 using NotoriumAPI.Models;
 
 namespace NotoriumAPI.Services
@@ -21,27 +21,15 @@ namespace NotoriumAPI.Services
         {
             var user = await context.Users
                 .Include(u => u.SheetMusic)
-                .Include(u => u.FavoriteSheetMusic)
                 .SingleOrDefaultAsync(u => u.Id == id);
 
             if (user == null)
                 return null;
 
-            return new UserDTO
-            {
-                Name = user.Name,
-                Email = user.Email,
-                Username = user.Username,
-                Description = user.Description,
-                ProfileImage = user.ProfileImage,
-                BackgroundImage = user.BackgroundImage,
-                Role = user.Role,
-                SheetMusic = user.SheetMusic,
-                FavoriteSheetMusic = user.FavoriteSheetMusic
-            };
+            return UserMapper.ToDTO(user);
         }
 
-        public async Task<User?> UpdateUserInformationAsync(int id, UserUpdateDTO updateDto)
+        public async Task<UserDTO?> UpdateUserInformationAsync(int id, UserUpdateDTO updateDto)
         {
             var user = await context.Users.SingleOrDefaultAsync(u => u.Id == id)
                 ?? throw new KeyNotFoundException($"User with ID {id} not found.");
@@ -62,10 +50,11 @@ namespace NotoriumAPI.Services
 
             context.Users.Update(user);
             await context.SaveChangesAsync();
-            return user;
+
+            return UserMapper.ToDTO(user);
         }
 
-        public async Task<User?> UpdateProfileImageAsync(int id, ProfileImageUpdateDTO updateDto)
+        public async Task<UserDTO?> UpdateProfileImageAsync(int id, ProfileImageUpdateDTO updateDto)
         {
             var user = await context.Users.SingleOrDefaultAsync(u => u.Id == id)
                 ?? throw new KeyNotFoundException($"User with ID {id} not found.");
@@ -97,10 +86,11 @@ namespace NotoriumAPI.Services
 
             context.Users.Update(user);
             await context.SaveChangesAsync();
-            return user;
+
+            return UserMapper.ToDTO(user);
         }
 
-        public async Task<User?> UpdateBackgroundImageAsync(int id, BannerImageUpdateDTO updateDto)
+        public async Task<UserDTO?> UpdateBackgroundImageAsync(int id, BannerImageUpdateDTO updateDto)
         {
             var user = await context.Users.SingleOrDefaultAsync(u => u.Id == id)
                 ?? throw new KeyNotFoundException($"User with ID {id} not found.");
@@ -132,7 +122,8 @@ namespace NotoriumAPI.Services
 
             context.Users.Update(user);
             await context.SaveChangesAsync();
-            return user;
+
+            return UserMapper.ToDTO(user);
         }
     }
 }

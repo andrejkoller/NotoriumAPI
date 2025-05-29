@@ -1,5 +1,7 @@
 ﻿using System.Security.Claims;
 using Microsoft.AspNetCore.Mvc;
+using NotoriumAPI.DTOs;
+using NotoriumAPI.Mappers;
 using NotoriumAPI.Models;
 using NotoriumAPI.Services;
 
@@ -14,16 +16,19 @@ namespace NotoriumAPI.Controllers
             _userService = userService;
         }
 
-        protected async Task<User?> GetCurrentUserAsync()
+        protected async Task<UserDTO?> GetCurrentUserAsync()
         {
-            {
-                var userId = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var userId = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-                if (!int.TryParse(userId, out int id))
-                    return null;
+            if (!int.TryParse(userId, out int id))
+                return null;
 
-                return await _userService.GetUserByIdAsync(id);
-            }
+            var user = await _userService.GetUserByIdAsync(id);
+
+            if (user == null)
+                return null;
+
+            return user;
         }
     }
 }

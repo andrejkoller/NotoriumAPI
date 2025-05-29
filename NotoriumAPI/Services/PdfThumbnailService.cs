@@ -2,24 +2,17 @@
 
 namespace NotoriumAPI.Services
 {
-    public class PdfThumbnailService
+    public class PdfThumbnailService(IWebHostEnvironment env)
     {
-        private readonly IWebHostEnvironment _env;
-
-        public PdfThumbnailService(IWebHostEnvironment env)
-        {
-            _env = env;
-        }
-
         public string GenerateThumbnail(string pdfFilePath)
         {
-            var inputPath = Path.Combine(_env.WebRootPath, pdfFilePath);
+            var inputPath = Path.Combine(env.WebRootPath, pdfFilePath);
 
             if (!File.Exists(inputPath))
                 throw new FileNotFoundException($"PDF file not found: {inputPath}");
 
             var thumbnailName = Path.GetFileNameWithoutExtension(pdfFilePath) + "_thumb.png";
-            var outputPath = Path.Combine(_env.WebRootPath, "uploads", thumbnailName);
+            var outputPath = Path.Combine(env.WebRootPath, "uploads", thumbnailName);
 
             try
             {

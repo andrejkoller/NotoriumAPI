@@ -1,54 +1,47 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using NotoriumAPI.DTOs;
+using NotoriumAPI.Mappers;
 using NotoriumAPI.Models;
 
 namespace NotoriumAPI.Services
 {
-    public class SheetMusicService
+    public class SheetMusicService(NotoriumDbContext context, PdfThumbnailService pdfThumbnailService, IWebHostEnvironment env)
     {
-        private readonly NotoriumDbContext _context;
-        private readonly PdfThumbnailService _pdfThumbnailService;
-        private readonly IWebHostEnvironment _env;
-
-        public SheetMusicService(NotoriumDbContext context, PdfThumbnailService pdfThumbnailService, IWebHostEnvironment env)
+        public async Task<List<SheetMusicDTO>> GetAllSheetMusicAsync()
         {
-            _context = context;
-            _pdfThumbnailService = pdfThumbnailService;
-            _env = env;
-        }
-
-        public async Task<List<SheetMusic>> GetAllSheetMusicAsync()
-        {
-            return await _context.SheetMusic
+            var sheetMusic = await context.SheetMusic
                 .Where(sm => sm.IsPublic)
                 .OrderByDescending(sm => sm.UploadedAt)
                 .Include(sm => sm.User)
                 .ToListAsync();
+
+            return [.. sheetMusic.Select(SheetMusicMapper.ToDTO)];
         }
 
-        public async Task<List<SheetMusic>> GetSheetMusicByUserId(int userId)
+        public async Task<List<SheetMusicDTO>> GetSheetMusicByUserId(int userId)
         {
-            return await _context.SheetMusic
-                .Where(sm => sm.UserId == userId)
-                .OrderByDescending(sm => sm.UploadedAt)
-                .Include(sm => sm.User)
-                .ToListAsync();
+            var user = await context.Users
+                .Include(u => u.SheetMusic)
+                .SingleOrDefaultAsync(u => u.Id == userId);
+
+            return user == null
+                ? throw new Exception("User with sheet music not found.")
+                : [.. user.SheetMusic.Where(sm => sm.IsPublic).Select(SheetMusicMapper.ToDTO)];
         }
 
-        public async Task<SheetMusic> GetSheetMusicById(int id)
+        public async Task<SheetMusicDTO> GetSheetMusicById(int id)
         {
-            var sheetMusic = await _context.SheetMusic.FindAsync(id);
-
-            return sheetMusic ?? throw new Exception("Sheet music not found.");
+            var sheetMusic = await context.SheetMusic.FindAsync(id);
+            return SheetMusicMapper.ToDTO(sheetMusic ?? throw new Exception("Sheet music not found."));
         }
 
-        public async Task<SheetMusic> UploadAsync(SheetMusicUploadDTO upload)
+        public async Task<SheetMusicDTO> UploadAsync(SheetMusicUploadDTO upload)
         {
             if (upload.File == null || upload.File.Length == 0)
                 throw new ArgumentException("No file uploaded.");
 
-            var uploadsPath = Path.Combine(_env.WebRootPath, "uploads");
+            var uploadsPath = Path.Combine(env.WebRootPath, "uploads");
             Directory.CreateDirectory(uploadsPath);
 
             var fileName = Path.GetFileName(upload.File.FileName);
@@ -60,8 +53,8 @@ namespace NotoriumAPI.Services
             }
 
             var relativePdfPath = Path.Combine("uploads", fileName).Replace("\\", "/");
-            var thumbnailPath = _pdfThumbnailService.GenerateThumbnail(filePath);
-            var relativeThumbnailPath = thumbnailPath.Replace(_env.WebRootPath, "").Replace("\\", "/");
+            var thumbnailPath = pdfThumbnailService.GenerateThumbnail(filePath);
+            var relativeThumbnailPath = thumbnailPath.Replace(env.WebRootPath, "").Replace("\\", "/");
 
             var sheetMusic = new SheetMusic
             {
@@ -80,9 +73,9 @@ namespace NotoriumAPI.Services
 
             try
             {
-                await _context.SheetMusic.AddAsync(sheetMusic);
-                await _context.SaveChangesAsync();
-                return sheetMusic;
+                await context.SheetMusic.AddAsync(sheetMusic);
+                await context.SaveChangesAsync();
+                return SheetMusicMapper.ToDTO(sheetMusic);
             }
             catch (Exception ex)
             {
@@ -93,16 +86,18 @@ namespace NotoriumAPI.Services
             }
         }
 
-        public async Task<List<SheetMusic>> GetByGenreAsync(string genre)
+        public async Task<List<SheetMusicDTO>> GetByGenreAsync(string genre)
         {
             if (!Enum.TryParse<Genre>(genre, true, out var genreEnum))
                 throw new ArgumentException("Invalid genre");
 
-            return await _context.SheetMusic
+            var sheetMusic = await context.SheetMusic
                 .Where(sm => sm.Genre == genreEnum && sm.IsPublic)
                 .OrderByDescending(sm => sm.UploadedAt)
                 .Include(sm => sm.User)
                 .ToListAsync();
+
+            return [.. sheetMusic.Select(SheetMusicMapper.ToDTO)];
         }
     }
 }
