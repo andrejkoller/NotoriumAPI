@@ -112,5 +112,19 @@ namespace NotoriumAPI.Services
 
             return [.. sheetMusic.Select(SheetMusicMapper.ToDTO)];
         }
+
+        public async Task<List<SheetMusicDTO>> GetByInstrumentAsync(string instrument)
+        {
+            if (!Enum.TryParse<Instrument>(instrument, true, out var instrumentEnum))
+                throw new ArgumentException("Invalid instrument");
+
+            var sheetMusic = await context.SheetMusic
+                .Where(sm => sm.Instrument == instrumentEnum && sm.IsPublic)
+                .OrderByDescending(sm => sm.UploadedAt)
+                .Include(sm => sm.User)
+                .ToListAsync();
+
+            return [.. sheetMusic.Select(SheetMusicMapper.ToDTO)];
+        }
     }
 }

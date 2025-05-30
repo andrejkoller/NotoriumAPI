@@ -84,15 +84,58 @@ namespace NotoriumAPI.Controllers
         [HttpGet("bygenre")]
         public async Task<IActionResult> GetByGenre([FromQuery] string genre)
         {
-            var result = await service.GetByGenreAsync(genre);
-            return Ok(result);
+            var currentUser = await GetCurrentUserAsync();
+
+            if (currentUser == null)
+                return Unauthorized(new { message = "User not authenticated" });
+
+            try
+            {
+                var result = await service.GetByGenreAsync(genre);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
         }
 
         [HttpGet("bydifficulty")]
         public async Task<IActionResult> GetByDifficulty([FromQuery] string difficulty)
         {
-            var result = await service.GetByDifficultyAsync(difficulty);
-            return Ok(result);
+            var currentUser = await GetCurrentUserAsync();
+
+            if (currentUser == null)
+                return Unauthorized(new { message = "User not authenticated" });
+
+            try
+            {
+                var result = await service.GetByDifficultyAsync(difficulty);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
+
+        [HttpGet("byinstrument")]
+        public async Task<IActionResult> GetByInstrument([FromQuery] string instrument)
+        {
+            var currentUser = await GetCurrentUserAsync();
+
+            if (currentUser == null)
+                return Unauthorized(new { message = "User not authenticated" });
+
+            try
+            {
+                var result = await service.GetByInstrumentAsync(instrument);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
         }
     }
 }
