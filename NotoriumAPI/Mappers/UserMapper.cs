@@ -15,7 +15,7 @@ namespace NotoriumAPI.Mappers
                 Username = user.Username,
                 Description = user.Description,
                 ProfileImage = user.ProfileImage,
-                BackgroundImage = user.BackgroundImage,
+                BannerImage = user.BannerImage,
                 Role = user.Role,
             };
         }

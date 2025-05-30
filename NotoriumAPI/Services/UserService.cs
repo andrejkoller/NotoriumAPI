@@ -95,29 +95,29 @@ namespace NotoriumAPI.Services
             var user = await context.Users.SingleOrDefaultAsync(u => u.Id == id)
                 ?? throw new KeyNotFoundException($"User with ID {id} not found.");
 
-            if (updateDto.BackgroundImageFile != null && updateDto.BackgroundImageFile.Length > 0)
+            if (updateDto.BannerImageFile != null && updateDto.BannerImageFile.Length > 0)
             {
                 var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "banner-images");
                 Directory.CreateDirectory(uploadsFolder);
 
-                var fileName = $"{Guid.NewGuid()}_{updateDto.BackgroundImageFile.FileName}";
+                var fileName = $"{Guid.NewGuid()}_{updateDto.BannerImageFile.FileName}";
                 var filePath = Path.Combine(uploadsFolder, fileName);
 
                 using (var stream = new FileStream(filePath, FileMode.Create))
                 {
-                    await updateDto.BackgroundImageFile.CopyToAsync(stream);
+                    await updateDto.BannerImageFile.CopyToAsync(stream);
                 }
 
-                if (!string.IsNullOrWhiteSpace(user.BackgroundImage))
+                if (!string.IsNullOrWhiteSpace(user.BannerImage))
                 {
-                    var oldFilePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", user.BackgroundImage);
+                    var oldFilePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", user.BannerImage);
                     if (File.Exists(oldFilePath))
                     {
                         File.Delete(oldFilePath);
                     }
                 }
 
-                user.BackgroundImage = Path.Combine("banner-images", fileName).Replace("\\", "/");
+                user.BannerImage = Path.Combine("banner-images", fileName).Replace("\\", "/");
             }
 
             context.Users.Update(user);

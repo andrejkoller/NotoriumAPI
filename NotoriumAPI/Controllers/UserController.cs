@@ -80,7 +80,7 @@ namespace NotoriumAPI.Controllers
             }
         }
 
-        [HttpPut("{id}/updateBackgroundImage")]
+        [HttpPut("{id}/uploadBannerImage")]
         public async Task<IActionResult> UpdateBackgroundImage(int id, [FromForm] BannerImageUpdateDTO updateDto)
         {
             var currentUser = await GetCurrentUserAsync();
@@ -91,8 +91,10 @@ namespace NotoriumAPI.Controllers
             try
             {
                 var user = await userService.UpdateBackgroundImageAsync(id, updateDto);
+
                 if (user == null)
                     return NotFound(new { error = "User not found" });
+
                 return Ok(user);
             }
             catch (ArgumentException e)

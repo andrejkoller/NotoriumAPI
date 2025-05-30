@@ -13,7 +13,7 @@ namespace NotoriumAPI.Models
         public string Password { get; set; } = string.Empty;
         public string? Description { get; set; } = string.Empty;
         public string? ProfileImage { get; set; } = string.Empty;
-        public string? BackgroundImage { get; set; } = string.Empty;
+        public string? BannerImage { get; set; } = string.Empty;
 
         [JsonConverter(typeof(JsonStringEnumConverter))]
         public UserRole Role { get; set; } = UserRole.User;

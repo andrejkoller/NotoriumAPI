@@ -2,7 +2,7 @@
 {
     public class BannerImageUpdateDTO
     {
-        public IFormFile BackgroundImageFile { get; set; } = null!;
+        public IFormFile BannerImageFile { get; set; } = null!;
 
     }
 }

@@ -23,6 +23,7 @@ namespace NotoriumAPI.Mappers
                 IsPublic = sheetMusic.IsPublic,
                 Downloads = sheetMusic.Downloads,
                 UserId = sheetMusic.UserId,
+                User = sheetMusic.User != null ? UserMapper.ToDTO(sheetMusic.User) : null
             };
         }
     }
