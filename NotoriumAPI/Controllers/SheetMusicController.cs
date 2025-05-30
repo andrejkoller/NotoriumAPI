@@ -87,5 +87,12 @@ namespace NotoriumAPI.Controllers
             var result = await service.GetByGenreAsync(genre);
             return Ok(result);
         }
+
+        [HttpGet("bydifficulty")]
+        public async Task<IActionResult> GetByDifficulty([FromQuery] string difficulty)
+        {
+            var result = await service.GetByDifficultyAsync(difficulty);
+            return Ok(result);
+        }
     }
 }

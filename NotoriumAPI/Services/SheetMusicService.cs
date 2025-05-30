@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using NotoriumAPI.DTOs;
 using NotoriumAPI.Mappers;
 using NotoriumAPI.Models;
@@ -93,6 +92,20 @@ namespace NotoriumAPI.Services
 
             var sheetMusic = await context.SheetMusic
                 .Where(sm => sm.Genre == genreEnum && sm.IsPublic)
+                .OrderByDescending(sm => sm.UploadedAt)
+                .Include(sm => sm.User)
+                .ToListAsync();
+
+            return [.. sheetMusic.Select(SheetMusicMapper.ToDTO)];
+        }
+
+        public async Task<List<SheetMusicDTO>> GetByDifficultyAsync(string difficulty)
+        {
+            if (!Enum.TryParse<Difficulty>(difficulty, true, out var difficultyEnum))
+                throw new ArgumentException("Invalid difficulty");
+
+            var sheetMusic = await context.SheetMusic
+                .Where(sm => sm.Difficulty == difficultyEnum && sm.IsPublic)
                 .OrderByDescending(sm => sm.UploadedAt)
                 .Include(sm => sm.User)
                 .ToListAsync();
