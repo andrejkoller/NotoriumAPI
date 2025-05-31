@@ -81,6 +81,25 @@ namespace NotoriumAPI.Controllers
             }
         }
 
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            var currentUser = await GetCurrentUserAsync();
+
+            if (currentUser == null)
+                return Unauthorized(new { message = "User not authenticated" });
+
+            try
+            {
+                await service.DeleteAsync(id);
+                return Ok(new { message = "Sheet music deleted successfully." });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
+
         [HttpGet("bygenre")]
         public async Task<IActionResult> GetByGenre([FromQuery] string genre)
         {

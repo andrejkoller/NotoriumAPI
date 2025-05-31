@@ -88,6 +88,21 @@ namespace NotoriumAPI.Services
             }
         }
 
+        public async Task DeleteAsync(int id)
+        {
+            var sheetMusic = await context.SheetMusic
+                .Include(sm => sm.User)
+                .SingleOrDefaultAsync(sm => sm.Id == id && sm.IsPublic) ?? throw new Exception("Sheet music not found or not public.");
+            
+            context.SheetMusic.Remove(sheetMusic);
+            await context.SaveChangesAsync();
+
+            var filePath = Path.Combine(env.WebRootPath, sheetMusic.FilePath);
+
+            if (File.Exists(filePath))
+                File.Delete(filePath);
+        }
+
         public async Task<List<SheetMusicDTO>> GetByGenreAsync(string genre)
         {
             if (!Enum.TryParse<Genre>(genre, true, out var genreEnum))
