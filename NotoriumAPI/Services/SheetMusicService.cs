@@ -126,5 +126,17 @@ namespace NotoriumAPI.Services
 
             return [.. sheetMusic.Select(SheetMusicMapper.ToDTO)];
         }
+
+        public async Task<List<SheetMusicDTO>> GetByUploadDateAsync(bool isOrderByDescending)
+        {
+            var sheetMusic = await context.SheetMusic
+                .Where(sm => sm.IsPublic)
+                .Include(sm => sm.User)
+                .ToListAsync();
+
+            return isOrderByDescending
+                ? [.. sheetMusic.OrderByDescending(sm => sm.UploadedAt).Select(SheetMusicMapper.ToDTO)]
+                : [.. sheetMusic.OrderBy(sm => sm.UploadedAt).Select(SheetMusicMapper.ToDTO)];
+        }
     }
 }

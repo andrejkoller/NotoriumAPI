@@ -18,7 +18,7 @@ namespace NotoriumAPI.Controllers
                 var sheetMusicList = await service.GetAllSheetMusicAsync();
                 return Ok(sheetMusicList);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 return BadRequest(new { message = ex.Message });
             }
@@ -75,7 +75,7 @@ namespace NotoriumAPI.Controllers
                 var sheetMusic = await service.UploadAsync(upload);
                 return Ok(sheetMusic);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 return BadRequest(new { message = ex.Message });
             }
@@ -130,6 +130,25 @@ namespace NotoriumAPI.Controllers
             try
             {
                 var result = await service.GetByInstrumentAsync(instrument);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
+
+        [HttpGet("byuploaddate")]
+        public async Task<IActionResult> GetByUploadDate([FromQuery] bool isOrderByDescending)
+        {
+            var currentUser = await GetCurrentUserAsync();
+
+            if (currentUser == null)
+                return Unauthorized(new { message = "User not authenticated" });
+
+            try
+            {
+                var result = await service.GetByUploadDateAsync(isOrderByDescending);
                 return Ok(result);
             }
             catch (Exception ex)
