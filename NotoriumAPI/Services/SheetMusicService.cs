@@ -31,7 +31,10 @@ namespace NotoriumAPI.Services
 
         public async Task<SheetMusicDTO> GetSheetMusicById(int id)
         {
-            var sheetMusic = await context.SheetMusic.FindAsync(id);
+            var sheetMusic = await context.SheetMusic
+                .Include(sm => sm.User)
+                .SingleOrDefaultAsync(sm => sm.Id == id && sm.IsPublic);
+
             return SheetMusicMapper.ToDTO(sheetMusic ?? throw new Exception("Sheet music not found."));
         }
 
@@ -156,6 +159,46 @@ namespace NotoriumAPI.Services
                 .ToListAsync();
 
             return [.. sheetMusic.Select(SheetMusicMapper.ToDTO)];
+        }
+
+        public async Task<List<SheetMusicDTO>> GetFavoriteSheetMusicAsync(int userId)
+        {
+            var user = await context.Users
+                .Include(u => u.FavoriteSheetMusic)
+                .SingleOrDefaultAsync(u => u.Id == userId) ?? throw new Exception("User not found.");
+
+            return [.. user.FavoriteSheetMusic.Where(sm => sm.IsPublic).Select(SheetMusicMapper.ToDTO)];
+        }
+
+        public async Task<SheetMusicDTO> AddToFavoritesAsync(int sheetMusicId, int userId)
+        {
+            var user = await context.Users
+                .Include(u => u.FavoriteSheetMusic)
+                .SingleOrDefaultAsync(u => u.Id == userId) ?? throw new Exception("User not found.");
+
+            var sheetMusic = await context.SheetMusic.FindAsync(sheetMusicId) ?? throw new Exception("Sheet music not found.");
+
+            if (user.FavoriteSheetMusic.Any(f => f.Id == sheetMusicId))
+                throw new Exception("Sheet music already in favorites.");
+
+            user.FavoriteSheetMusic.Add(sheetMusic);
+            await context.SaveChangesAsync();
+
+            return SheetMusicMapper.ToDTO(sheetMusic);
+        }
+
+        public async Task<bool> RemoveFromFavoritesAsync(int sheetMusicId, int userId)
+        {
+            var user = await context.Users
+                .Include(u => u.FavoriteSheetMusic)
+                .SingleOrDefaultAsync(u => u.Id == userId) ?? throw new Exception("User not found.");
+
+            var sheetMusic = user.FavoriteSheetMusic.SingleOrDefault(f => f.Id == sheetMusicId) ?? throw new Exception("Sheet music not found in favorites.");
+
+            user.FavoriteSheetMusic.Remove(sheetMusic);
+            await context.SaveChangesAsync();
+
+            return true;
         }
     }
 }

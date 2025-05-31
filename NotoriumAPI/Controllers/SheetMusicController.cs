@@ -175,5 +175,65 @@ namespace NotoriumAPI.Controllers
                 return BadRequest(new { message = ex.Message });
             }
         }
+
+        [HttpGet("{id}/favorites")]
+        public async Task<IActionResult> GetFavoriteSheetMusic(int id)
+        {
+            var currentUser = await GetCurrentUserAsync();
+
+            if (currentUser == null)
+                return Unauthorized(new { message = "User not authenticated" });
+
+            if (currentUser.Id != id)
+                return Forbid("You can only access your own favorite sheet music.");
+
+            try
+            {
+                var result = await service.GetFavoriteSheetMusicAsync(currentUser.Id);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
+
+        [HttpPost("favorite/{id}")]
+        public async Task<IActionResult> AddToFavorites(int id)
+        {
+            var currentUser = await GetCurrentUserAsync();
+
+            if (currentUser == null)
+                return Unauthorized(new { message = "User not authenticated" });
+
+            try
+            {
+                var result = await service.AddToFavoritesAsync(id, currentUser.Id);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
+
+        [HttpDelete("favorite/{id}")]
+        public async Task<IActionResult> RemoveFromFavorites(int id)
+        {
+            var currentUser = await GetCurrentUserAsync();
+
+            if (currentUser == null)
+                return Unauthorized(new { message = "User not authenticated" });
+
+            try
+            {
+                var result = await service.RemoveFromFavoritesAsync(id, currentUser.Id);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
     }
 }

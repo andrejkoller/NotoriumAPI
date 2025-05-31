@@ -21,6 +21,7 @@ namespace NotoriumAPI.Services
         {
             var user = await context.Users
                 .Include(u => u.SheetMusic)
+                .Include(u => u.FavoriteSheetMusic)
                 .SingleOrDefaultAsync(u => u.Id == id);
 
             if (user == null)

@@ -17,6 +17,7 @@ namespace NotoriumAPI.Mappers
                 ProfileImage = user.ProfileImage,
                 BannerImage = user.BannerImage,
                 Role = user.Role,
+                FavoriteSheetMusic = (ICollection<SheetMusic>)[.. (ICollection<SheetMusic>)[.. user.FavoriteSheetMusic]]
             };
         }
     }

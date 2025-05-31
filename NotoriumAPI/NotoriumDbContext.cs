@@ -35,8 +35,11 @@ namespace NotoriumAPI
 
             modelBuilder.Entity<User>()
                 .HasMany(u => u.FavoriteSheetMusic)
-                .WithMany(sm => sm.FavoritedByUsers)
-                .UsingEntity(j => j.ToTable("UserFavoriteSheetMusic"));
+                .WithMany(s => s.FavoritedByUsers)
+                .UsingEntity<Dictionary<string, object>>(
+                    "UserFavoriteSheetMusic",
+                    j => j.HasOne<SheetMusic>().WithMany().HasForeignKey("SheetMusicId"),
+                    j => j.HasOne<User>().WithMany().HasForeignKey("UserId"));
 
             modelBuilder.Entity<User>().ToTable("Users");
             modelBuilder.Entity<SheetMusic>().ToTable("SheetMusic");

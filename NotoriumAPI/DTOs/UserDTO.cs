@@ -16,5 +16,6 @@ namespace NotoriumAPI.DTOs
 
         [JsonConverter(typeof(JsonStringEnumConverter))]
         public UserRole Role { get; set; } = UserRole.User;
+        public ICollection<SheetMusic> FavoriteSheetMusic { get; set; } = [];
     }
 }
