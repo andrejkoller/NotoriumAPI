@@ -138,5 +138,24 @@ namespace NotoriumAPI.Services
                 ? [.. sheetMusic.OrderByDescending(sm => sm.UploadedAt).Select(SheetMusicMapper.ToDTO)]
                 : [.. sheetMusic.OrderBy(sm => sm.UploadedAt).Select(SheetMusicMapper.ToDTO)];
         }
+
+        public async Task<List<SheetMusicDTO>> SearchAsync(string searchQuery)
+        {
+            if (string.IsNullOrWhiteSpace(searchQuery))
+                throw new ArgumentException("Search query cannot be empty.");
+
+            var lowerQuery = searchQuery.ToLower();
+
+            var sheetMusic = await context.SheetMusic
+                .Include(sm => sm.User)
+                .Where(sm => sm.IsPublic && (
+                    (sm.Title != null && sm.Title.ToLower().Contains(lowerQuery)) ||
+                    (sm.Composer != null && sm.Composer.ToLower().Contains(lowerQuery)) ||
+                    (sm.User != null && sm.User.Name != null && sm.User.Name.ToLower().Contains(lowerQuery))))
+                .OrderByDescending(sm => sm.UploadedAt)
+                .ToListAsync();
+
+            return [.. sheetMusic.Select(SheetMusicMapper.ToDTO)];
+        }
     }
 }

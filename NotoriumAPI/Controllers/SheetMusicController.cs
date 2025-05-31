@@ -156,5 +156,24 @@ namespace NotoriumAPI.Controllers
                 return BadRequest(new { message = ex.Message });
             }
         }
+
+        [HttpGet("search")]
+        public async Task<IActionResult> Search([FromQuery] string query)
+        {
+            var currentUser = await GetCurrentUserAsync();
+
+            if (currentUser == null)
+                return Unauthorized(new { message = "User not authenticated" });
+
+            try
+            {
+                var result = await service.SearchAsync(query);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
     }
 }
