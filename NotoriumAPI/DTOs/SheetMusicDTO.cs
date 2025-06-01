@@ -17,6 +17,8 @@ namespace NotoriumAPI.DTOs
         public string Description { get; set; } = string.Empty;
         public bool IsPublic { get; set; }
         public int Downloads { get; set; }
+        public int Favorites { get; set; }
+        public int Views { get; set; }
         public int UserId { get; set; }
         public UserDTO? User { get; set; }
     }

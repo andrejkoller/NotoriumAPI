@@ -22,6 +22,8 @@ namespace NotoriumAPI.Mappers
                 Description = sheetMusic.Description,
                 IsPublic = sheetMusic.IsPublic,
                 Downloads = sheetMusic.Downloads,
+                Favorites = sheetMusic.FavoritedByUsers?.Count ?? 0,
+                Views = sheetMusic.Views,
                 UserId = sheetMusic.UserId,
                 User = sheetMusic.User != null ? UserMapper.ToDTO(sheetMusic.User) : null
             };

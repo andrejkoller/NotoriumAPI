@@ -33,9 +33,14 @@ namespace NotoriumAPI.Services
         {
             var sheetMusic = await context.SheetMusic
                 .Include(sm => sm.User)
-                .SingleOrDefaultAsync(sm => sm.Id == id && sm.IsPublic);
+                .Include(sm => sm.FavoritedByUsers)
+                .SingleOrDefaultAsync(sm => sm.Id == id && sm.IsPublic) 
+                ?? throw new Exception("Sheet music not found or not public.");
+            
+            sheetMusic.Views++;
+            await context.SaveChangesAsync();
 
-            return SheetMusicMapper.ToDTO(sheetMusic ?? throw new Exception("Sheet music not found."));
+            return SheetMusicMapper.ToDTO(sheetMusic);
         }
 
         public async Task<SheetMusicDTO> UploadAsync(SheetMusicUploadDTO upload)
@@ -92,7 +97,8 @@ namespace NotoriumAPI.Services
         {
             var sheetMusic = await context.SheetMusic
                 .Include(sm => sm.User)
-                .SingleOrDefaultAsync(sm => sm.Id == id && sm.IsPublic) ?? throw new Exception("Sheet music not found or not public.");
+                .SingleOrDefaultAsync(sm => sm.Id == id && sm.IsPublic)
+                ?? throw new Exception("Sheet music not found or not public.");
             
             context.SheetMusic.Remove(sheetMusic);
             await context.SaveChangesAsync();
@@ -180,7 +186,8 @@ namespace NotoriumAPI.Services
         {
             var user = await context.Users
                 .Include(u => u.FavoriteSheetMusic)
-                .SingleOrDefaultAsync(u => u.Id == userId) ?? throw new Exception("User not found.");
+                .SingleOrDefaultAsync(u => u.Id == userId)
+                ?? throw new Exception("User not found.");
 
             return [.. user.FavoriteSheetMusic.Where(sm => sm.IsPublic).Select(SheetMusicMapper.ToDTO)];
         }
@@ -189,7 +196,8 @@ namespace NotoriumAPI.Services
         {
             var user = await context.Users
                 .Include(u => u.FavoriteSheetMusic)
-                .SingleOrDefaultAsync(u => u.Id == userId) ?? throw new Exception("User not found.");
+                .SingleOrDefaultAsync(u => u.Id == userId)
+                ?? throw new Exception("User not found.");
 
             var sheetMusic = await context.SheetMusic.FindAsync(sheetMusicId) ?? throw new Exception("Sheet music not found.");
 
@@ -206,7 +214,8 @@ namespace NotoriumAPI.Services
         {
             var user = await context.Users
                 .Include(u => u.FavoriteSheetMusic)
-                .SingleOrDefaultAsync(u => u.Id == userId) ?? throw new Exception("User not found.");
+                .SingleOrDefaultAsync(u => u.Id == userId)
+                ?? throw new Exception("User not found.");
 
             var sheetMusic = user.FavoriteSheetMusic.SingleOrDefault(f => f.Id == sheetMusicId) ?? throw new Exception("Sheet music not found in favorites.");
 
@@ -214,6 +223,23 @@ namespace NotoriumAPI.Services
             await context.SaveChangesAsync();
 
             return true;
+        }
+
+        public async Task<string> GetSheetMusicFilePathAsync(int sheetMusicId)
+        {
+            var sheetMusic = await context.SheetMusic
+                .SingleOrDefaultAsync(sm => sm.Id == sheetMusicId && sm.IsPublic)
+                ?? throw new Exception("Sheet music not found or not public.");
+            
+            var absolutePath = Path.Combine(env.WebRootPath, sheetMusic.FilePath);
+            
+            if (!File.Exists(absolutePath))
+                throw new FileNotFoundException("PDF file not found.", absolutePath);
+
+            sheetMusic.Downloads++;
+            await context.SaveChangesAsync();
+
+            return absolutePath;
         }
     }
 }

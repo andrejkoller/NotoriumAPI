@@ -26,6 +26,7 @@ namespace NotoriumAPI.Models
         public string Description { get; set; } = string.Empty;
         public bool IsPublic { get; set; } = true;
         public int Downloads { get; set; } = 0;
+        public int Views { get; set; } = 0;
 
         public int UserId { get; set; }
         public User? User { get; set; }

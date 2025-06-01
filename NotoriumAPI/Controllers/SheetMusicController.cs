@@ -254,5 +254,31 @@ namespace NotoriumAPI.Controllers
                 return BadRequest(new { message = ex.Message });
             }
         }
+
+        [HttpGet("{id}/download")]
+        public async Task<IActionResult> DownloadSheetMusic(int id)
+        {
+            var currentUser = await GetCurrentUserAsync();
+
+            if (currentUser == null)
+                return Unauthorized(new { message = "User not authenticated" });
+
+            try
+            {
+                var filePath = await service.GetSheetMusicFilePathAsync(id);
+
+                if (string.IsNullOrEmpty(filePath))
+                    return NotFound(new { message = "Sheet music file not found." });
+
+                var fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read);
+                var fileName = Path.GetFileName(filePath);
+
+                return File(fileStream, "application/pdf", fileName);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
     }
 }
