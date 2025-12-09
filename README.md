@@ -1,8 +1,8 @@
 ## Short description
 
-A modern .NET 9 Web API for managing, sharing, and discovering sheet music. Features user authentication, PDF upload & download, favorites, search, and more.
+This is the backend API for managing, sharing, and discovering sheet music. Features user authentication, PDF upload & download, favorites, search, and more.
 
-## Features
+## ✨ Features
 
 - User registration, login, and profile management
 - Upload, download, and delete sheet music (PDF)
@@ -12,7 +12,7 @@ A modern .NET 9 Web API for managing, sharing, and discovering sheet music. Feat
 - Track downloads and views
 - Secure endpoints with JWT authentication
 
-## Tech Stack
+## 🛠️ Technologies Used
 
 - .NET 9 (ASP.NET Core Web API)
 - Entity Framework Core
@@ -21,21 +21,21 @@ A modern .NET 9 Web API for managing, sharing, and discovering sheet music. Feat
 - PDF processing for thumbnails
 - JWT Authentication
 
-## Prerequisites
+## 📋 Prerequisites
 
 - .NET SDK 9
 - MSSQL Server
 
-## Getting Started
+## 📦 Installation
 
-### 1. Clone the repository
+1. Clone the repository
 
 ```bash
 git clone https://github.com/andrejkoller/NotoriumAPI.git
 cd NotoriumAPI
 ```
 
-### 2. Configure the database connection
+2. Configure the database connection
 
 Edit the connection string in `appsettings.json` or `appsettings.Development.json`:
 
@@ -45,7 +45,7 @@ Edit the connection string in `appsettings.json` or `appsettings.Development.jso
 }
 ```
 
-### 3. Apply database migration
+3. Apply database migration
 
 Make sure the Entity Framework Core CLI is installed:
 
@@ -59,10 +59,14 @@ Then apply the migrations:
 dotnet ef database update
 ```
 
-### 4. Run the API
+4. Run the API
 
  ```bash
 dotnet run --project NotoriumAPI
 ```
 
 The API will be available at `https://localhost:7189`.
+
+## 🔗 Related
+
+- Frontend Repository: [notorium-frontend](https://github.com/andrejkoller/notorium-frontend)
