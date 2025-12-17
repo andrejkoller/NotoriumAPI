@@ -17,7 +17,7 @@ namespace NotoriumAPI.Controllers
             _authService = authService;
         }
 
-        [HttpPost("register")]
+        [HttpPost("signup")]
         public async Task<IActionResult> Register([FromBody] RegisterDTO request)
         {
             try
