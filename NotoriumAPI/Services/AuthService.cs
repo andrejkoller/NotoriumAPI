@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using NotoriumAPI.Data;
 using NotoriumAPI.DTOs;
 using NotoriumAPI.Mappers;
 using NotoriumAPI.Models;

@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using NotoriumAPI;
+using NotoriumAPI.Data;
 using NotoriumAPI.Services;
 using System.Text;
 using System.Text.Json.Serialization;

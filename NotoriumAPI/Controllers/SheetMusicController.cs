@@ -27,11 +27,6 @@ namespace NotoriumAPI.Controllers
         [HttpGet("user/{id}")]
         public async Task<IActionResult> GetCurrentUserSheetMusic(int id)
         {
-            var currentUser = await GetCurrentUserAsync();
-
-            if (currentUser == null)
-                return Unauthorized(new { message = "User not authenticated" });
-
             try
             {
                 var sheetMusicList = await service.GetSheetMusicByUserId(id);
@@ -84,11 +79,6 @@ namespace NotoriumAPI.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
-            var currentUser = await GetCurrentUserAsync();
-
-            if (currentUser == null)
-                return Unauthorized(new { message = "User not authenticated" });
-
             try
             {
                 await service.DeleteAsync(id);
@@ -103,11 +93,6 @@ namespace NotoriumAPI.Controllers
         [HttpGet("bygenre")]
         public async Task<IActionResult> GetByGenre([FromQuery] string genre)
         {
-            var currentUser = await GetCurrentUserAsync();
-
-            if (currentUser == null)
-                return Unauthorized(new { message = "User not authenticated" });
-
             try
             {
                 var result = await service.GetByGenreAsync(genre);
@@ -122,11 +107,6 @@ namespace NotoriumAPI.Controllers
         [HttpGet("bydifficulty")]
         public async Task<IActionResult> GetByDifficulty([FromQuery] string difficulty)
         {
-            var currentUser = await GetCurrentUserAsync();
-
-            if (currentUser == null)
-                return Unauthorized(new { message = "User not authenticated" });
-
             try
             {
                 var result = await service.GetByDifficultyAsync(difficulty);
@@ -141,11 +121,6 @@ namespace NotoriumAPI.Controllers
         [HttpGet("byinstrument")]
         public async Task<IActionResult> GetByInstrument([FromQuery] string instrument)
         {
-            var currentUser = await GetCurrentUserAsync();
-
-            if (currentUser == null)
-                return Unauthorized(new { message = "User not authenticated" });
-
             try
             {
                 var result = await service.GetByInstrumentAsync(instrument);
@@ -160,11 +135,6 @@ namespace NotoriumAPI.Controllers
         [HttpGet("byuploaddate")]
         public async Task<IActionResult> GetByUploadDate([FromQuery] bool isOrderByDescending)
         {
-            var currentUser = await GetCurrentUserAsync();
-
-            if (currentUser == null)
-                return Unauthorized(new { message = "User not authenticated" });
-
             try
             {
                 var result = await service.GetByUploadDateAsync(isOrderByDescending);
@@ -179,11 +149,6 @@ namespace NotoriumAPI.Controllers
         [HttpGet("search")]
         public async Task<IActionResult> Search([FromQuery] string query)
         {
-            var currentUser = await GetCurrentUserAsync();
-
-            if (currentUser == null)
-                return Unauthorized(new { message = "User not authenticated" });
-
             try
             {
                 var result = await service.SearchAsync(query);
@@ -258,11 +223,6 @@ namespace NotoriumAPI.Controllers
         [HttpGet("{id}/download")]
         public async Task<IActionResult> DownloadSheetMusic(int id)
         {
-            var currentUser = await GetCurrentUserAsync();
-
-            if (currentUser == null)
-                return Unauthorized(new { message = "User not authenticated" });
-
             try
             {
                 var filePath = await service.GetSheetMusicFilePathAsync(id);
@@ -284,11 +244,6 @@ namespace NotoriumAPI.Controllers
         [HttpGet("{id}/print")]
         public async Task<IActionResult> PrintSheetMusic(int id)
         {
-            var currentUser = await GetCurrentUserAsync();
-
-            if (currentUser == null)
-                return Unauthorized(new { message = "User not authenticated" });
-
             try
             {
                 var filePath = await service.GetSheetMusicFilePathAsync(id);

@@ -1,12 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using NotoriumAPI.Models;
 
-namespace NotoriumAPI
+namespace NotoriumAPI.Data
 {
-    public class NotoriumDbContext : DbContext
+    public class NotoriumDbContext(DbContextOptions<NotoriumDbContext> options) : DbContext(options)
     {
-        public NotoriumDbContext(DbContextOptions<NotoriumDbContext> options) : base(options) { }
-
         public DbSet<User> Users { get; set; }
         public DbSet<SheetMusic> SheetMusic { get; set; }
 
