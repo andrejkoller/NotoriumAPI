@@ -1,4 +1,4 @@
-## Short description
+# notorium api
 
 This is the backend API for managing, sharing, and discovering sheet music. Features user authentication, PDF upload & download, favorites, search, and more.
 
